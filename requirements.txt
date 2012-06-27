@@ -1,2 +1,4 @@
 nose
 emds
+pyyaml
+git+http://github.com/ntt/reverence.git

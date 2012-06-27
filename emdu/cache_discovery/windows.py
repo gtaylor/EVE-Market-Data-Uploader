@@ -13,8 +13,9 @@ def autodetect_caches():
     :rtype: list
     :returns: A list of cache directory paths.
     """
+    # This appears to suffice for Mac, whereas it can cause issues on some
+    # Linux distros.
     home_dir = os.path.expanduser('~/')
-    username = pwd.getpwuid(os.getuid())[0]
 
     # Potential cache dir name possibilities.
     cache_dirname_possibilities = [

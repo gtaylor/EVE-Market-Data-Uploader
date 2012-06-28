@@ -19,7 +19,7 @@ class CrudeCacheWatcher(BaseCacheWatcher):
         """
 
         self.cache_dir_path = cache_dir_path
-        self.last_scanned = 0
+        self.last_scanned = time.time()
 
     def scan_for_updated_files(self):
         """

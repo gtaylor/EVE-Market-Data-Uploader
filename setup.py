@@ -10,10 +10,10 @@ except ImportError:
         """
         return
 
-import emds
-
 required = [
     'emds',
+    'requests',
+    'pyyaml',
 ]
 
 scripts = [

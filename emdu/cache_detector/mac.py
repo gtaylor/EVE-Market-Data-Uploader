@@ -1,11 +1,15 @@
 """
 Cache directory auto-detection for Mac OS.
 """
+
 import os
+from emdu.cache_detector.base_loader import BaseCacheLoader
 
-from emdu.cache_loading.base_loader import BaseCacheLoader
-
-class WindowsCacheLoader(BaseCacheLoader):
+class MacCacheDetector(BaseCacheLoader):
+    """
+    Cache detection for Mac. The Mac directories are split up all over the
+    place, so this one ends up being kind of wonky.
+    """
 
     def autodetect_caches(self):
         """
@@ -14,8 +18,6 @@ class WindowsCacheLoader(BaseCacheLoader):
         :rtype: list
         :returns: A list of cache directory paths.
         """
-        # This appears to suffice for Mac, whereas it can cause issues on some
-        # Linux distros.
         home_dir = os.path.expanduser('~/')
 
         # Potential cache dir name possibilities.

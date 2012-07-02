@@ -5,7 +5,6 @@
 *.log
 .DS_Store
 *.pid
-settings.py
 build
 dist
 *.egg-info

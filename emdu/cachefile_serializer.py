@@ -4,11 +4,10 @@ format message.
 """
 
 import datetime
-from emds.formats.unified.unified_utils import gen_iso_datetime_str
+from reverence.blue import marshal
 from emds.data_structures import MarketOrderList, MarketOrder
 from emds.formats.unified import encode_to_json
 from emdu.rev_compat import blue
-import json
 
 # Some constants that identify this uploader.
 ORDER_GENERATOR = {
@@ -29,7 +28,7 @@ def wintime_to_datetime(timestamp):
 
     return datetime.datetime.utcfromtimestamp((timestamp-116444736000000000)/10000000)
 
-def serialize_orders(doc_dict, regiondata):
+def serialize_orders(doc_dict, region_data):
     """
     Serializes a GetOrders cache file's contents.
 
@@ -65,24 +64,11 @@ def serialize_orders(doc_dict, regiondata):
             )
             order_list.add_order(order)
 
-    if len(order_list) > 0:
-        return encode_to_json(order_list)
-    else:
-        data = {
-        "resultType" : "orders",
-        "version" : "0.1",
-        "uploadKeys" : UPLOAD_KEYS,
-        "generator" : ORDER_GENERATOR,
-        "currentTime" : gen_iso_datetime_str(generated_at),
-        "columns" : ["price","volRemaining","range","orderID","volEntered","minVolume","bid","issueDate","duration","stationID","solarSystemID"],
-        "rowsets" : [{
-            "generatedAt" : gen_iso_datetime_str(generated_at),
-            "regionID" : regiondata[2],
-            "typeID" : regiondata[3],
-            "rows" : []
-        }]
-        }
-        return json.dumps(data)
+    if len(order_list) is 0:
+        # There were no orders for this item+region combo.
+        order_list.set_empty_region(region_data[2], region_data[3], generated_at)
+
+    return encode_to_json(order_list)
 
 def serialize_cache_file(cache_file_path):
     """
@@ -106,7 +92,8 @@ def serialize_cache_file(cache_file_path):
     # Parse with either reverence or despair.
     try:
         key, obj = blue.marshal.Load(fobj.read())
-    except UnmarshalError:
+    except marshal.UnmarshalError:
+        # The file probably wasn't finished writing when EMDU tried to read it.
         return None
 
     if key[1] == 'GetOrders':

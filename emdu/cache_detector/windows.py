@@ -24,7 +24,12 @@ class WindowsCacheDetector(BaseCacheLoader):
         # Potential cache dir name possibilities.
         cache_dirname_possibilities = [
             # Found on my machine.
-            "c_program_files_ccp_eve_tranquility",
+            # C:\Users\Snipa\AppData\Local\CCP
+            # C:\Users\Snipa\AppData\Local\CCP\EVE\c_program_files_(x86)_ccp_eve_tranquility\cache\MachoNet\87.237.38.200\330\CachedMethodCalls
+            "c_program_files_ccp_eve_tranquility/cache/MachoNet/87.237.38.200/",
+            "c_program_files_(x86)_ccp_eve_tranquility/cache/MachoNet/87.237.38.200/",
+
+
         ]
 
         # Stores the path to the detected caches.
@@ -34,10 +39,13 @@ class WindowsCacheDetector(BaseCacheLoader):
         for cache_dir in cache_dirname_possibilities:
             path = os.path.join(
                 home_dir,
-                "Library/Application Support/EVE Online/p_drive/Local Settings/Application Data/CCP/EVE/%s" % cache_dir
+                "AppData/Local/CCP/EVE/%s" % cache_dir
             )
+            print path
             if os.path.exists(path):
-                caches_found.append(path)
+                dirs = os.listdir(path)
+                dirs.sort()
+                caches_found.append(os.path.join(path, "%s/CachedMethodCalls" % dirs.pop()))
 
         # This will eventually detect multiple installations, I guess.
         return caches_found

@@ -6,4 +6,5 @@ Simple console-based uploader.
 from emdu.console_client import client
 
 # Let's get this party started.
-client.run()
+if __name__ == '__main__':
+	client.run()

@@ -38,7 +38,13 @@ class CrudeCacheWatcher(BaseCacheWatcher):
         for cache_file in os.listdir(self.cache_dir_path):
             full_cache_file_path = os.path.join(self.cache_dir_path, cache_file)
             # We do this to get the file's last modified time.
-            stat_result = os.stat(full_cache_file_path)
+
+            # Catching file removal by eve before we can read the mtime from the file
+            try:
+                stat_result = os.stat(full_cache_file_path)
+            except (IOError, OSError):
+                print "Caught error from missing cache file"
+                pass
             # File's last modified time.
             cache_mtime = stat_result.st_mtime
 

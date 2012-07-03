@@ -4,9 +4,11 @@ format message.
 """
 
 import datetime
+from emds.formats.unified.unified_utils import gen_iso_datetime_str
 from emds.data_structures import MarketOrderList, MarketOrder
 from emds.formats.unified import encode_to_json
 from emdu.rev_compat import blue
+import json
 
 # Some constants that identify this uploader.
 ORDER_GENERATOR = {
@@ -27,7 +29,7 @@ def wintime_to_datetime(timestamp):
 
     return datetime.datetime.utcfromtimestamp((timestamp-116444736000000000)/10000000)
 
-def serialize_orders(doc_dict):
+def serialize_orders(doc_dict, regiondata):
     """
     Serializes a GetOrders cache file's contents.
 
@@ -66,7 +68,21 @@ def serialize_orders(doc_dict):
     if len(order_list) > 0:
         return encode_to_json(order_list)
     else:
-        return None
+        data = {
+        "resultType" : "orders",
+        "version" : "0.1",
+        "uploadKeys" : UPLOAD_KEYS,
+        "generator" : ORDER_GENERATOR,
+        "currentTime" : gen_iso_datetime_str(generated_at),
+        "columns" : ["price","volRemaining","range","orderID","volEntered","minVolume","bid","issueDate","duration","stationID","solarSystemID"],
+        "rowsets" : [{
+            "generatedAt" : gen_iso_datetime_str(generated_at),
+            "regionID" : regiondata[2],
+            "typeID" : regiondata[3],
+            "rows" : []
+        }]
+        }
+        return json.dumps(data)
 
 def serialize_cache_file(cache_file_path):
     """
@@ -80,13 +96,21 @@ def serialize_cache_file(cache_file_path):
         JSON string that will be uploaded to EMDR. Otherwise, return None.
     """
 
-    fobj = open(cache_file_path, 'r')
+    # Catching missing files between passes, eve can delete cache file
+    # before we can read it.
+    try:
+        fobj = open(cache_file_path, 'r')
+    except (IOError, OSError):
+        print "Cache file removed before we got to it"
+        return None
     # Parse with either reverence or despair.
-    key, obj = blue.marshal.Load(fobj.read())
+    try:
+        key, obj = blue.marshal.Load(fobj.read())
+    except UnmarshalError:
+        return None
 
-    print key[1]
     if key[1] == 'GetOrders':
-        json_str = serialize_orders(obj)
+        json_str = serialize_orders(obj, key)
         fobj.close()
         return json_str
 

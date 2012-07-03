@@ -31,7 +31,9 @@ def cache_processor_worker(cache_dirs, upload_queue):
     cache_watchers = []
     for cache_dir in cache_dirs:
         # Each EVE installation has a cache watcher to monitor it.
+        print "Setting up monitor on %s" % cache_dir
         cache_watchers.append(CrudeCacheWatcher(cache_dir))
+
 
     while True:
         # This value should never go below two seconds, and should probably
@@ -40,16 +42,18 @@ def cache_processor_worker(cache_dirs, upload_queue):
 
         # Each cache watcher represents a separate EVE install.
         for cache_watcher in cache_watchers:
+            # print "Scanning for files"
             updated_files = cache_watcher.scan_for_updated_files()
 
             for cache_file in updated_files:
-                print(" $ Checking %s" % cache_file)
+                # print(" $ Checking %s" % cache_file)
                 # If this spits anything non-None out, we know it needs
                 # to be uploaded to EMDR.
                 message_json = serialize_cache_file(cache_file)
                 if message_json:
                     # Toss the encoded JSON into the upload queue, where the
                     # upload_worker process will get it.
+                    print "Adding message to the queue for upload."
                     upload_queue.put(message_json)
 
 def upload_worker(upload_queue):

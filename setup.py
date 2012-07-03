@@ -17,7 +17,7 @@ required = [
 ]
 
 scripts = [
-    'bin/emdu_console',
+    'bin/emdu_console.py',
 ]
 
 setup(

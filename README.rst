@@ -30,11 +30,9 @@ We'll eventually package this up more nicely, apologies for the hassle.
 * Install Reverence -- https://github.com/ntt/reverence/downloads -- https://github.com/downloads/ntt/reverence/reverence-1.4.2.win32-py2.7.exe
 * Install Pyyaml -- http://pyyaml.org/wiki/PyYAML -- http://pyyaml.org/download/pyyaml/PyYAML-3.10.win32-py2.7.exe
 * Install Setuptools -- http://pypi.python.org/pypi/setuptools -- http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe
-* Install Pip -- http://www.pip-installer.org/en/latest/installing.html#using-the-installer
-* Download source of the EMDU from github -- https://github.com/gtaylor/EVE-Market-Data-Uploader/tree/win32 -- https://github.com/gtaylor/EVE-Market-Data-Uploader/tarball/master
+* Download source of the EMDU from github -- https://github.com/gtaylor/EVE-Market-Data-Uploader/tree/win32 -- https://github.com/gtaylor/EVE-Market-Data-Uploader/zipball/master
 * Extract source, open shell, goto extraction location
-* Install pre-reqs: pip install -r requirements.txt
-* Install software: python setup.py install
+* Install software: ``python setup.py install``
 * Test and run: ``python <python install path>\scripts\emdu_console``
 * Optionally, add emdu_console to your path, which would let you just type
   ``emdu_console``.

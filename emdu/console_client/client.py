@@ -4,6 +4,7 @@ Very simple console-based uploader client.
 
 import sys
 import time
+import logging
 from multiprocessing import Process, Queue
 from emdu.cache_detector import CacheDetector
 from emdu.cache_watcher.crude_watcher import CrudeCacheWatcher
@@ -11,6 +12,7 @@ from emdu.cachefile_serializer import serialize_cache_file
 from emdu.console_client import settings
 from emdu.message_uploader import upload_message
 
+logger = logging.getLogger(__name__)
 # Any entries in this queue are encoded JSON messages, ready for
 # sending to EMDR.
 UPLOAD_QUEUE = Queue()
@@ -32,7 +34,7 @@ def cache_processor_worker(cache_dirs, upload_queue):
     cache_watchers = []
     for cache_dir in cache_dirs:
         # Each EVE installation has a cache watcher to monitor it.
-        print "Setting up monitor on %s" % cache_dir
+        logger.info("Setting up monitor on %s" % cache_dir)
         cache_watchers.append(CrudeCacheWatcher(cache_dir))
 
 
@@ -54,7 +56,7 @@ def cache_processor_worker(cache_dirs, upload_queue):
                 if message_json:
                     # Toss the encoded JSON into the upload queue, where the
                     # upload_worker process will get it.
-                    print "Adding message to the queue for upload."
+                    logger.debug("Adding message to the queue for upload.")
                     upload_queue.put(message_json)
 
 def upload_worker(upload_queue):
@@ -82,12 +84,12 @@ def run():
     # Use the cache detector (OS-dependent) to find EVE installations.
     cache_dirs = CacheDetector().autodetect_caches()
     if not cache_dirs:
-        print(" ! No cache directories found, exiting.")
+        logger.error(" ! No cache directories found, exiting.")
         sys.exit(1)
 
-    print("Watching EVE cache dirs:")
+    logger.info("Watching EVE cache dirs:")
     for cache_dir in cache_dirs:
-        print(" * %s" % cache_dir)
+        logger.info(" * %s" % cache_dir)
 
     # Spawn a process that will monitor all of the EVE installation cache
     # directories for file modification.

@@ -19,7 +19,7 @@ class WindowsCacheDetector(BaseCacheLoader):
         """
 
         # The install locations are pretty consistent with Windows, since
-        # there's an official installer.
+        # there's an official installer.fd
         home_dir = os.path.expanduser('~/')
         default_path = os.path.join(
             home_dir,

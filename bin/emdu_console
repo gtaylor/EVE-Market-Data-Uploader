@@ -3,8 +3,11 @@
 Simple console-based uploader.
 """
 
+import logging
 from emdu.console_client import client
 
 # Let's get this party started.
 if __name__ == '__main__':
-	client.run()
+    logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.DEBUG)
+
+    client.run()

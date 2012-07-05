@@ -2,6 +2,7 @@
 Very simple console-based uploader client.
 """
 
+import sys
 import time
 from multiprocessing import Process, Queue
 from emdu.cache_detector import CacheDetector
@@ -78,9 +79,13 @@ def run():
 
     global UPLOAD_QUEUE
 
-    print("Watching EVE cache dirs:")
     # Use the cache detector (OS-dependent) to find EVE installations.
     cache_dirs = CacheDetector().autodetect_caches()
+    if not cache_dirs:
+        print(" ! No cache directories found, exiting.")
+        sys.exit(1)
+
+    print("Watching EVE cache dirs:")
     for cache_dir in cache_dirs:
         print(" * %s" % cache_dir)
 

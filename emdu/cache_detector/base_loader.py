@@ -8,13 +8,58 @@ class BaseCacheLoader(object):
 
     def autodetect_caches(self):
         """
-        Override this in your detector's sub-class. Auto-detects cache paths.
+        High-level auto-detection method. In your sub-classes, override
+        the other methods referenced here with platform-specific behavior.
 
         :rtype: list
         :returns: A list of cache directory paths.
         """
 
+        # Stores the path to the detected caches.
+        caches_found = []
+
+        for eve_dir in self._get_eve_dirs():
+            for tranq_dir in self._find_tranquility_dirs(eve_dir):
+
+                most_recent_version = self.find_latest_cache_version(tranq_dir)
+                if not most_recent_version:
+                    # No cache dirs yet, we can't use this.
+                    continue
+
+                path = os.path.join(tranq_dir, most_recent_version, "CachedMethodCalls")
+                if not os.path.exists(path):
+                    # Doesn't exist, can't use it.
+                    continue
+
+                caches_found.append(path)
+
+            return caches_found
+
+    def _get_eve_dirs(self):
+        """
+        Looks at a number of different locations that EVE installations can
+        live, based on the platform. Verifies their existence before yielding
+        the paths.
+
+        :rtype: generator
+        :returns: A generator of path strings to EVE installations.
+        """
         raise NotImplementedError
+
+    def _find_tranquility_dirs(self, path):
+        """
+        Given a base path, os.walk through it to find all Tranquility
+        (87.237.38.200) directories.
+
+        :param basestring path: The path to start searching for Tranq cache
+            dirs from. The higher this is up the hierarchy, the longer this
+            may take.
+        :rtype: generator
+        :returns: A generator of Tranquility cache paths.
+        """
+        for root, subfolders, files in os.walk(path):
+            if '87.237.38.200' in subfolders:
+                yield os.path.join(root, '87.237.38.200')
 
     def find_latest_cache_version(self, path):
         """

@@ -10,34 +10,22 @@ class WindowsCacheDetector(BaseCacheLoader):
     Cache detection for Windows.
     """
 
-    def autodetect_caches(self):
+    def _get_eve_dirs(self):
         """
-        Auto-detect cache paths on Windows OS.
+        Platform-specific searching for EVE installation directories.
 
-        :rtype: list
-        :returns: A list of cache directory paths.
+        :rtype: generator
+        :returns: A generator of path strings to EVE installations.
         """
-        # This appears to suffice for Mac, whereas it can cause issues on some
-        # Linux distros.
+
+        # The install locations are pretty consistent with Windows, since
+        # there's an official installer.
         home_dir = os.path.expanduser('~/')
-        base_path = os.path.join(
+        default_path = os.path.join(
             home_dir,
             "AppData/Local/CCP/EVE/"
         )
 
-        cache_dirname_possibilities = []
-
-        for root, subFolders, files in os.walk(base_path):
-            try:
-                folder = subFolders.index("CachedMethodCalls")
-                cache_dirname_possibilities.append(os.path.join(
-                    base_path,
-                    root,
-                    subFolders[folder]
-                ))
-            except ValueError:
-                pass
-
-        # This will eventually detect multiple installations, I guess.
-        return cache_dirname_possibilities
+        if os.path.exists(default_path):
+            yield default_path
 

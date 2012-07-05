@@ -10,15 +10,26 @@ console-based, and aims to be the most cross-platform uploader.
 Current state
 -------------
 
-I'm tinkering with it when I feel like it. This may or may never see the
-light of day, but it's a fun toy.
+Currently working reliably, just not configurable at all.
+
+Source code is available on the `GitHub project`_.
+
+.. _GitHub project: https://github.com/gtaylor/EVE-Market-Data-Uploader
 
 Linux/Mac Install
 -----------------
 
-* ``pip install -r requirements.txt``
-* ``python setup.py install``
+For the sake of simplicitly, these instructions install to system Python.
+For those that car enough, use virtualenv. For everyone else who doesn't know
+what that means, use these:
+
+* Download the `latest source snapshot`_ from GitHub.
+* Extract and ``cd`` to the extracted source.
+* ``sudo pip install -r requirements.txt``
+* ``sudo python setup.py install``
 * You should now be able to run via ``emdu_console``
+
+.. _latest source snapshot: https://github.com/gtaylor/EVE-Market-Data-Uploader/tarball/master
 
 Windows Install
 ---------------
@@ -27,14 +38,16 @@ We'll eventually package this up more nicely, apologies for the hassle.
 
 * Install Python 2.7 x86, x64 will not work due to incompatablities with
   reverence -- http://python.org/ftp/python/2.7.3/python-2.7.3.msi
-* Install Reverence -- https://github.com/ntt/reverence/downloads -- https://github.com/downloads/ntt/reverence/reverence-1.4.2.win32-py2.7.exe
-* Install Setuptools -- http://pypi.python.org/pypi/setuptools -- http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe
-* Download source of the EMDU from github -- https://github.com/gtaylor/EVE-Market-Data-Uploader/tree/win32 -- https://github.com/gtaylor/EVE-Market-Data-Uploader/zipball/master
-* Extract source, open shell, goto extraction location
+* Install Reverence -- https://github.com/ntt/reverence/downloads
+* Install Setuptools -- http://pypi.python.org/pypi/setuptools
+* Download the `latest zipped source snapshot`_ from GitHub.
+* Extract source, open shell, go to extraction location.
 * Install software: ``python setup.py install``
 * Test and run: ``python <python install path>\scripts\emdu_console``
 * Optionally, add emdu_console to your path, which would let you just type
   ``emdu_console``.
+
+.. _latest zipped source snapshot: https://github.com/gtaylor/EVE-Market-Data-Uploader/zipball/master
 
 License
 -------

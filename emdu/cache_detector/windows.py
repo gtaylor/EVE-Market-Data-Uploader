@@ -1,5 +1,5 @@
 """
-Cache directory auto-detection for Mac OS.
+Cache directory auto-detection for Windows OS.
 """
 
 import os
@@ -12,7 +12,7 @@ class WindowsCacheDetector(BaseCacheLoader):
 
     def autodetect_caches(self):
         """
-        Auto-detect cache paths on Mac OS.
+        Auto-detect cache paths on Windows OS.
 
         :rtype: list
         :returns: A list of cache directory paths.
@@ -20,32 +20,24 @@ class WindowsCacheDetector(BaseCacheLoader):
         # This appears to suffice for Mac, whereas it can cause issues on some
         # Linux distros.
         home_dir = os.path.expanduser('~/')
+        base_path = os.path.join(
+            home_dir,
+            "AppData/Local/CCP/EVE/"
+        )
 
-        # Potential cache dir name possibilities.
-        cache_dirname_possibilities = [
-            # Found on my machine.
-            # C:\Users\Snipa\AppData\Local\CCP
-            # C:\Users\Snipa\AppData\Local\CCP\EVE\c_program_files_(x86)_ccp_eve_tranquility\cache\MachoNet\87.237.38.200\330\CachedMethodCalls
-            "c_program_files_ccp_eve_tranquility/cache/MachoNet/87.237.38.200/",
-            "c_program_files_(x86)_ccp_eve_tranquility/cache/MachoNet/87.237.38.200/",
+        cache_dirname_possibilities = []
 
-
-        ]
-
-        # Stores the path to the detected caches.
-        caches_found = []
-
-        # This will eventually detect multiple installations, I guess.
-        for cache_dir in cache_dirname_possibilities:
-            path = os.path.join(
-                home_dir,
-                "AppData/Local/CCP/EVE/%s" % cache_dir
-            )
-            print path
-            if os.path.exists(path):
-                dirs = os.listdir(path)
-                dirs.sort()
-                caches_found.append(os.path.join(path, "%s/CachedMethodCalls" % dirs.pop()))
+        for root, subFolders, files in os.walk(base_path):
+            try:
+                folder = subFolders.index("CachedMethodCalls")
+                cache_dirname_possibilities.append(os.path.join(
+                    base_path,
+                    root,
+                    subFolders[folder]
+                ))
+            except ValueError:
+                pass
 
         # This will eventually detect multiple installations, I guess.
-        return caches_found
+        return cache_dirname_possibilities
+

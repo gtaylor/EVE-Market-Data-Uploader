@@ -73,16 +73,19 @@ def upload_worker(upload_queue):
         message_json = upload_queue.get()
         upload_message(message_json)
 
-def run():
+def run(additional_eve_dirs=None):
     """
     Fires up the various processes that comprise the client. For each EVE
     install,
+
+    :keyword list additional_eve_dirs: If speficied, append this list of
+        additional paths to search for cache dirs.
     """
 
     global UPLOAD_QUEUE
 
     # Use the cache detector (OS-dependent) to find EVE installations.
-    cache_dirs = CacheDetector().autodetect_caches()
+    cache_dirs = CacheDetector().autodetect_caches(additional_eve_dirs=additional_eve_dirs)
     if not cache_dirs:
         logger.error(" ! No cache directories found, exiting.")
         sys.exit(1)

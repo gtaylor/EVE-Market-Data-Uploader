@@ -15,8 +15,8 @@ class LinuxCacheDetector(BaseCacheLoader):
         """
         Platform-specific searching for EVE installation directories.
 
-        :rtype: generator
-        :returns: A generator of path strings to EVE installations.
+        :rtype: list
+        :returns: A list of path strings to EVE installations.
         """
 
         home_dir = os.path.expanduser('~/')
@@ -30,4 +30,6 @@ class LinuxCacheDetector(BaseCacheLoader):
             "Local Settings/Application Data/CCP/EVE/")
 
         if os.path.exists(default_path):
-            yield default_path
+            return [default_path]
+        else:
+            return []

@@ -14,10 +14,14 @@ logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.DEBUG)
 parser = argparse.ArgumentParser(
     description="A simple, minimalistic EVE market data uploader.",
 )
+parser.add_argument(
+    '--add-eve', action='append', dest='eve_dirs',
+    help="Appends an EVE install dir to the defaults. You may use this multiple times " \
+         "in order to add multiple installations.")
 
 # Let's get this party started.
 if __name__ == '__main__':
     parsed = parser.parse_args()
 
-    client.run()
+    client.run(additional_eve_dirs=parsed.eve_dirs)
 

@@ -27,5 +27,7 @@ class WindowsCacheDetector(BaseCacheLoader):
         )
 
         if os.path.exists(default_path):
-            yield default_path
+            return [default_path]
+        else:
+            return []
 

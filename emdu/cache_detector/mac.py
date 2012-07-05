@@ -28,4 +28,6 @@ class MacCacheDetector(BaseCacheLoader):
             "Library/Application Support/EVE Online/p_drive/Local Settings/Application Data/CCP/EVE/")
 
         if os.path.exists(default_path):
-            yield default_path
+            return [default_path]
+        else:
+            return []

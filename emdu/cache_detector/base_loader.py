@@ -6,19 +6,24 @@ class BaseCacheLoader(object):
     useful methods for all or most OS-specific loaders.
     """
 
-    def autodetect_caches(self):
+    def autodetect_caches(self, additional_eve_dirs=None):
         """
         High-level auto-detection method. In your sub-classes, override
         the other methods referenced here with platform-specific behavior.
 
+        :keyword list additional_eve_dirs: If speficied, append this list of
+            additional paths to search for cache dirs.
         :rtype: list
         :returns: A list of cache directory paths.
         """
 
         # Stores the path to the detected caches.
         caches_found = []
+        eve_dirs = self._get_eve_dirs()
+        if additional_eve_dirs:
+            eve_dirs += additional_eve_dirs
 
-        for eve_dir in self._get_eve_dirs():
+        for eve_dir in eve_dirs:
             for tranq_dir in self._find_tranquility_dirs(eve_dir):
 
                 most_recent_version = self.find_latest_cache_version(tranq_dir)
@@ -41,8 +46,8 @@ class BaseCacheLoader(object):
         live, based on the platform. Verifies their existence before yielding
         the paths.
 
-        :rtype: generator
-        :returns: A generator of path strings to EVE installations.
+        :rtype: list
+        :returns: A list of path strings to EVE installations.
         """
         raise NotImplementedError
 

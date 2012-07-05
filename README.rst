@@ -49,6 +49,15 @@ We'll eventually package this up more nicely, apologies for the hassle.
 
 .. _latest zipped source snapshot: https://github.com/gtaylor/EVE-Market-Data-Uploader/zipball/master
 
+Specifying additional EVE directories
+-------------------------------------
+
+If EMDU's auto EVE installation detection doesn't work, you can append
+additional EVE install dirs to search for cache directories. You can add
+multiple EVE dirs by using the ``--add-eve`` flag multiple times::
+
+    emdu_console --add-eve "/home/gtaylor/.wine/drive_c/users/gtaylor/Local Settings/Application Data/CCP/EVE/"
+
 License
 -------
 

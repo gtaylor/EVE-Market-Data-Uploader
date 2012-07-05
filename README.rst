@@ -28,7 +28,6 @@ We'll eventually package this up more nicely, apologies for the hassle.
 * Install Python 2.7 x86, x64 will not work due to incompatablities with
   reverence -- http://python.org/ftp/python/2.7.3/python-2.7.3.msi
 * Install Reverence -- https://github.com/ntt/reverence/downloads -- https://github.com/downloads/ntt/reverence/reverence-1.4.2.win32-py2.7.exe
-* Install Pyyaml -- http://pyyaml.org/wiki/PyYAML -- http://pyyaml.org/download/pyyaml/PyYAML-3.10.win32-py2.7.exe
 * Install Setuptools -- http://pypi.python.org/pypi/setuptools -- http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe
 * Download source of the EMDU from github -- https://github.com/gtaylor/EVE-Market-Data-Uploader/tree/win32 -- https://github.com/gtaylor/EVE-Market-Data-Uploader/zipball/master
 * Extract source, open shell, goto extraction location

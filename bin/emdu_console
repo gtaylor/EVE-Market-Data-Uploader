@@ -4,6 +4,8 @@ Simple console-based uploader.
 """
 
 import logging
+#noinspection PyUnresolvedReferences
+import emdu.signal_handlers
 from emdu.console_client import client
 
 # Let's get this party started.
@@ -11,3 +13,4 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.DEBUG)
 
     client.run()
+

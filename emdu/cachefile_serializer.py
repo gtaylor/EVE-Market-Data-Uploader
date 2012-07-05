@@ -85,7 +85,7 @@ def serialize_cache_file(cache_file_path):
     # Catching missing files between passes, eve can delete cache file
     # before we can read it.
     try:
-        fobj = open(cache_file_path, 'r')
+        fobj = open(cache_file_path, 'rb')
     except (IOError, OSError):
         print "Cache file removed before we got to it"
         return None

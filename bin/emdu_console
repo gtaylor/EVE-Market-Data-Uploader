@@ -3,14 +3,21 @@
 Simple console-based uploader.
 """
 
+import argparse
 import logging
 #noinspection PyUnresolvedReferences
 import emdu.signal_handlers
 from emdu.console_client import client
 
+logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.DEBUG)
+
+parser = argparse.ArgumentParser(
+    description="A simple, minimalistic EVE market data uploader.",
+)
+
 # Let's get this party started.
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.DEBUG)
+    parsed = parser.parse_args()
 
     client.run()
 

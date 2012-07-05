@@ -27,10 +27,19 @@ class BaseCacheLoader(object):
         :returns: The most recent MachoNet server cache dir. If no directories
             are found, return None.
         """
+
+        # An eventual list of cache version ints.
+        cache_versions = []
+
         # Convert all cache dirs to ints.
-        # TODO: Handle failure here in case someone does some goofy shit with
-        # their directories. Or maybe we just let them suffer. Har.
-        cache_versions = [int(x) for x in os.listdir(path)]
+        for version_dir in os.listdir(path):
+            try:
+                version_num = int(version_dir)
+            except (TypeError, ValueError):
+                # This was probably .DS_Store, or some other non-relevant dir.
+                continue
+            cache_versions.append(version_num)
+
         if not cache_versions:
             return None
 

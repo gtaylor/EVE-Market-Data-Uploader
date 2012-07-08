@@ -5,7 +5,7 @@ format message.
 
 import datetime
 from reverence.blue import marshal
-from emds.data_structures import MarketOrderList, MarketOrder
+from emds.data_structures import MarketOrderList, MarketOrder, MarketHistoryList, MarketHistoryEntry
 from emds.formats.unified import encode_to_json
 from emds.common_utils import now_dtime_in_utc, enlighten_dtime
 from emdu.rev_compat import blue
@@ -43,6 +43,8 @@ def serialize_orders(doc_dict, region_data):
     )
     # timezone-aware datetime.
     generated_at = now_dtime_in_utc()
+    region_id = region_data[2]
+    type_id = region_data[3]
 
     for order_item in doc_dict['lret']:
         #print order_item
@@ -68,9 +70,47 @@ def serialize_orders(doc_dict, region_data):
 
     if len(order_list) is 0:
         # There were no orders for this item+region combo.
-        order_list.set_empty_region(region_data[2], region_data[3], generated_at)
+        order_list.set_empty_region(region_id, type_id, generated_at)
 
     return encode_to_json(order_list)
+
+def serialize_history(doc_dict, region_data):
+    """
+    Serializes a GetOldPriceHistory cache file's contents.
+
+    :param dict doc_dict: The parsed cache document in dict form.
+    :rtype: str
+    :returns: The UUDIF serialized JSON message.
+    """
+    hist_list = MarketHistoryList(
+        order_generator=ORDER_GENERATOR,
+        upload_keys=UPLOAD_KEYS,
+    )
+    # timezone-aware datetime.
+    generated_at = now_dtime_in_utc()
+    region_id = region_data[2]
+    type_id = region_data[3]
+
+    for hist_item in doc_dict['lret']:
+        #print hist_item
+        entry = MarketHistoryEntry(
+            type_id=type_id,
+            region_id=region_id,
+            historical_date=wintime_to_datetime(hist_item['historyDate']),
+            num_orders=hist_item['orders'],
+            low_price=hist_item['lowPrice'],
+            high_price=hist_item['highPrice'],
+            average_price=hist_item['avgPrice'],
+            total_quantity=hist_item['volume'],
+            generated_at=generated_at,
+        )
+        hist_list.add_entry(entry)
+
+    if len(hist_list) is 0:
+        # There were no orders for this item+region combo.
+        hist_list.set_empty_region(region_id, type_id, generated_at)
+
+    return encode_to_json(hist_list)
 
 def serialize_cache_file(cache_file_path):
     """
@@ -100,6 +140,10 @@ def serialize_cache_file(cache_file_path):
 
     if key[1] == 'GetOrders':
         json_str = serialize_orders(obj, key)
+        fobj.close()
+        return json_str
+    if key[1] == 'GetOldPriceHistory':
+        json_str = serialize_history(obj, key)
         fobj.close()
         return json_str
 

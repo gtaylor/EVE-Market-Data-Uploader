@@ -23,7 +23,7 @@ def upload_message(json_str):
     data = zlib.compress(json_str)
 
     r = requests.post(
-        'http://secondary.eve-emdr.com/upload/',
+        'http://upload.eve-emdr.com/upload/',
         data=data,
         headers=UPLOAD_HEADERS,
     )

@@ -5,6 +5,7 @@ Simple console-based uploader.
 
 import argparse
 import logging
+import sys
 #noinspection PyUnresolvedReferences
 import emdu.signal_handlers
 from emdu.console_client import client
@@ -21,13 +22,23 @@ parser.add_argument(
 parser.add_argument(
     '--enable-deletion', action='store_true', dest='delete_cache', default=False,
     help="Enable deletion of cache files after read.")
+parser.add_argument(
+    '--scan-interval', action='store', dest='scan_interval', default=2.0,
+    help="Cache file scan interval. Defaults to every 2 seconds.")
 
 # Let's get this party started.
 if __name__ == '__main__':
     parsed = parser.parse_args()
 
+    try:
+        scan_interval = float(parsed.scan_interval)
+    except (TypeError, ValueError):
+        logging.error("Invalid scan interval.")
+        sys.exit(1)
+
     client.run(
         additional_eve_dirs=parsed.eve_dirs,
         delete_cache=parsed.delete_cache,
+        cache_scan_interval=scan_interval,
     )
 

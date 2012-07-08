@@ -9,7 +9,6 @@ from multiprocessing import Process, Queue
 from emdu.cache_detector import CacheDetector
 from emdu.cache_watcher.crude_watcher import CrudeCacheWatcher
 from emdu.cachefile_serializer import serialize_cache_file
-from emdu.console_client import settings
 from emdu.message_uploader import upload_message
 from emdu.utils import empty_cache_dir, delete_cache_file
 
@@ -18,7 +17,8 @@ logger = logging.getLogger(__name__)
 # sending to EMDR.
 UPLOAD_QUEUE = Queue()
 
-def cache_processor_worker(cache_dirs, upload_queue, delete_cache):
+def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
+                           cache_scan_interval):
     """
     This is ran as a process. This function checks all detected EVE installation
     cache dirs for modified files. If files of interest are found, their
@@ -29,6 +29,7 @@ def cache_processor_worker(cache_dirs, upload_queue, delete_cache):
     :param multiprocessing.Queue upload_queue: A queue that holds encoded JSON
         messages that are ready to be sent to EMDR.
     :param bool delete_cache: If True, delete cache files after reading them.
+    :param float cache_scan_interval: Interval (in seconds) to scan the caches.
     """
 
     # Holds all of the cache watchers we'll need to scan for updates on each
@@ -47,7 +48,7 @@ def cache_processor_worker(cache_dirs, upload_queue, delete_cache):
     while True:
         # This value should never go below two seconds, and should probably
         # stay above three. This keeps filesystem mtime debauchery to a minimum.
-        time.sleep(settings.CACHE_SCAN_INTERVAL)
+        time.sleep(cache_scan_interval)
 
         # Each cache watcher represents a separate EVE install.
         for cache_watcher in cache_watchers:
@@ -83,14 +84,15 @@ def upload_worker(upload_queue):
         message_json = upload_queue.get()
         upload_message(message_json)
 
-def run(additional_eve_dirs=None, delete_cache=False):
+def run(additional_eve_dirs, delete_cache, cache_scan_interval):
     """
     Fires up the various processes that comprise the client. For each EVE
     install,
 
-    :keyword list additional_eve_dirs: If specified, append this list of
+    :param list additional_eve_dirs: If specified, append this list of
         additional paths to search for cache dirs.
-    :keyword bool delete_cache: If True, delete cache files after reading.
+    :param bool delete_cache: If True, delete cache files after reading.
+    :param float cache_scan_interval: Interval (in seconds) to scan the caches.
     """
 
     global UPLOAD_QUEUE
@@ -109,7 +111,7 @@ def run(additional_eve_dirs=None, delete_cache=False):
     # directories for file modification.
     cache_worker_process = Process(
         target=cache_processor_worker,
-        args=(cache_dirs, UPLOAD_QUEUE, delete_cache)
+        args=(cache_dirs, UPLOAD_QUEUE, delete_cache, cache_scan_interval)
     )
     cache_worker_process.start()
 

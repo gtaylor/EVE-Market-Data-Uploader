@@ -19,14 +19,15 @@ Source code is available on the `GitHub project`_.
 Linux/Mac Install
 -----------------
 
-For the sake of simplicitly, these instructions install to system Python.
+For the sake of simplicity, these instructions install to system Python.
 For those that car enough, use virtualenv. For everyone else who doesn't know
 what that means, use these:
 
 * Download the `latest source snapshot`_ from GitHub.
 * Extract and ``cd`` to the extracted source.
-* ``sudo pip install -r requirements.txt``
 * ``sudo python setup.py install``
+* Optionally, you may install watchdog, which enables a much more efficient
+  and accurate cache monitor: ``sudo easy_install watchdog``
 * You should now be able to run via ``emdu_console``
 
 .. _latest source snapshot: https://github.com/gtaylor/EVE-Market-Data-Uploader/tarball/master
@@ -43,6 +44,8 @@ We'll eventually package this up more nicely, apologies for the hassle.
 * Download the `latest zipped source snapshot`_ from GitHub.
 * Extract source, open shell, go to extraction location.
 * Install software: ``python setup.py install``
+* Optionally, you may install watchdog, which enables a much more efficient
+  and accurate cache monitor: ``easy_install watchdog``
 * Test and run: ``python <python install path>\scripts\emdu_console``
 * Optionally, add emdu_console to your path, which would let you just type
   ``emdu_console``.
@@ -57,6 +60,16 @@ additional EVE install dirs to search for cache directories. You can add
 multiple EVE dirs by using the ``--add-eve`` flag multiple times::
 
     emdu_console --add-eve "/home/gtaylor/.wine/drive_c/users/gtaylor/Local Settings/Application Data/CCP/EVE/"
+
+Cache file deletion
+-------------------
+
+By default, EMDU does not delete cache files after reading them. We don't want
+to get in the way of any other tools that you may be using. If you would like
+EMDU to delete cache files after reading them, use the ``--enable-deletion``
+flag::
+
+    emdu_console --enable-deletion
 
 License
 -------

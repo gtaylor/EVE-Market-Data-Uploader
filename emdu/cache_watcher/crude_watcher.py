@@ -1,6 +1,9 @@
 import os
 import time
+import logging
 from emdu.cache_watcher.base_watcher import BaseCacheWatcher
+
+logger = logging.getLogger(__name__)
 
 class CrudeCacheWatcher(BaseCacheWatcher):
     """
@@ -43,8 +46,8 @@ class CrudeCacheWatcher(BaseCacheWatcher):
             try:
                 stat_result = os.stat(full_cache_file_path)
             except (IOError, OSError):
-                print "Caught error from missing cache file"
-                pass
+                logger.error("Caught error from missing cache file")
+                continue
             # File's last modified time.
             cache_mtime = stat_result.st_mtime
 

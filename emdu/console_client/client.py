@@ -7,7 +7,7 @@ import time
 import logging
 from multiprocessing import Process, Queue
 from emdu.cache_detector import CacheDetector
-from emdu.cache_watcher.crude_watcher import CrudeCacheWatcher
+from emdu.cache_watcher import CacheWatcher
 from emdu.cachefile_serializer import serialize_cache_file
 from emdu.message_uploader import upload_message
 from emdu.utils import empty_cache_dir, delete_cache_file
@@ -42,8 +42,7 @@ def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
             empty_cache_dir(cache_dir)
 
         # Each EVE installation has a cache watcher to monitor it.
-        logger.info("Setting up monitor on %s" % cache_dir)
-        cache_watchers.append(CrudeCacheWatcher(cache_dir))
+        cache_watchers.append(CacheWatcher(cache_dir))
 
     while True:
         # This value should never go below two seconds, and should probably
@@ -102,10 +101,6 @@ def run(additional_eve_dirs, delete_cache, cache_scan_interval):
     if not cache_dirs:
         logger.error(" ! No cache directories found, exiting.")
         sys.exit(1)
-
-    logger.info("Watching EVE cache dirs:")
-    for cache_dir in cache_dirs:
-        logger.info(" * %s" % cache_dir)
 
     # Spawn a process that will monitor all of the EVE installation cache
     # directories for file modification.

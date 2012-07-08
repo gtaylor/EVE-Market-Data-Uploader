@@ -22,6 +22,7 @@ class CrudeCacheWatcher(BaseCacheWatcher):
             monitor for modification.
         """
 
+        logger.info("Starting crude cache watcher for: %s" % cache_dir_path)
         # When the class was instantiated.
         self.start_time = time.time()
         # Full path to the cache dir being watched.
@@ -104,14 +105,14 @@ class CrudeCacheWatcher(BaseCacheWatcher):
             the last time this method was ran.
         """
 
-        updated = []
+        updated = set()
         for cache_file in os.listdir(self.cache_dir_path):
             full_cache_file_path = os.path.join(self.cache_dir_path, cache_file)
 
             if self.see_if_file_has_new_data(full_cache_file_path):
                 # This file was modified since the last time we ran this method.
                 # Stick it on the list to return.
-                updated.append(full_cache_file_path)
+                updated.add(full_cache_file_path)
                 self.mark_file_as_read(full_cache_file_path)
 
         return updated

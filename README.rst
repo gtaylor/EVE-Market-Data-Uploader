@@ -10,7 +10,8 @@ console-based, and aims to be the most cross-platform uploader.
 Current state
 -------------
 
-Currently working reliably, just not configurable at all.
+EMDU currently runs well, is reasonably configurable via command line args,
+and is efficient enough.
 
 Source code is available on the `GitHub project`_.
 
@@ -38,7 +39,7 @@ Windows Install
 
 We'll eventually package this up more nicely, apologies for the hassle.
 
-* Install Python 2.7 x86, x64 will not work due to incompatablities with
+* Install Python 2.7 x86, x64 will not work due to incompatibilities with
   reverence -- http://python.org/ftp/python/2.7.3/python-2.7.3.msi
 * Install Reverence -- https://github.com/ntt/reverence/downloads
 * Install Setuptools -- http://pypi.python.org/pypi/setuptools

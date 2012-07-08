@@ -7,6 +7,7 @@ import datetime
 from reverence.blue import marshal
 from emds.data_structures import MarketOrderList, MarketOrder
 from emds.formats.unified import encode_to_json
+from emds.common_utils import now_dtime_in_utc, enlighten_dtime
 from emdu.rev_compat import blue
 
 # Some constants that identify this uploader.
@@ -26,21 +27,22 @@ def wintime_to_datetime(timestamp):
     :returns: The correct UTC-aware timestamp.
     """
 
-    return datetime.datetime.utcfromtimestamp((timestamp-116444736000000000)/10000000)
+    return enlighten_dtime(datetime.datetime.utcfromtimestamp((timestamp-116444736000000000)/10000000))
 
 def serialize_orders(doc_dict, region_data):
     """
     Serializes a GetOrders cache file's contents.
 
     :param dict doc_dict: The parsed cache document in dict form.
-    :rtype: str or None
-    :returns: If
+    :rtype: str
+    :returns: The UUDIF serialized JSON message.
     """
     order_list = MarketOrderList(
         order_generator=ORDER_GENERATOR,
         upload_keys=UPLOAD_KEYS,
     )
-    generated_at = datetime.datetime.now()
+    # timezone-aware datetime.
+    generated_at = now_dtime_in_utc()
 
     for order_item in doc_dict['lret']:
         #print order_item

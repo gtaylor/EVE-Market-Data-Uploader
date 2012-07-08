@@ -18,10 +18,16 @@ parser.add_argument(
     '--add-eve', action='append', dest='eve_dirs',
     help="Appends an EVE install dir to the defaults. You may use this multiple times " \
          "in order to add multiple installations.")
+parser.add_argument(
+    '--enable-deletion', action='store_true', dest='delete_cache', default=False,
+    help="Enable deletion of cache files after read.")
 
 # Let's get this party started.
 if __name__ == '__main__':
     parsed = parser.parse_args()
 
-    client.run(additional_eve_dirs=parsed.eve_dirs)
+    client.run(
+        additional_eve_dirs=parsed.eve_dirs,
+        delete_cache=parsed.delete_cache,
+    )
 

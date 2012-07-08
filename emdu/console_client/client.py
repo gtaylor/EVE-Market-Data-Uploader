@@ -11,13 +11,14 @@ from emdu.cache_watcher.crude_watcher import CrudeCacheWatcher
 from emdu.cachefile_serializer import serialize_cache_file
 from emdu.console_client import settings
 from emdu.message_uploader import upload_message
+from emdu.utils import empty_cache_dir, delete_cache_file
 
 logger = logging.getLogger(__name__)
 # Any entries in this queue are encoded JSON messages, ready for
 # sending to EMDR.
 UPLOAD_QUEUE = Queue()
 
-def cache_processor_worker(cache_dirs, upload_queue):
+def cache_processor_worker(cache_dirs, upload_queue, delete_cache):
     """
     This is ran as a process. This function checks all detected EVE installation
     cache dirs for modified files. If files of interest are found, their
@@ -27,16 +28,21 @@ def cache_processor_worker(cache_dirs, upload_queue):
     :param list cache_dirs: A list of cache dir paths to monitor for changes.
     :param multiprocessing.Queue upload_queue: A queue that holds encoded JSON
         messages that are ready to be sent to EMDR.
+    :param bool delete_cache: If True, delete cache files after reading them.
     """
 
     # Holds all of the cache watchers we'll need to scan for updates on each
     # detected EVE install.
     cache_watchers = []
     for cache_dir in cache_dirs:
+        if delete_cache:
+            # If cache deletion is enabled, start by clearing out all of the old gunk.
+            logger.info("Clearing old entries from cache.")
+            empty_cache_dir(cache_dir)
+
         # Each EVE installation has a cache watcher to monitor it.
         logger.info("Setting up monitor on %s" % cache_dir)
         cache_watchers.append(CrudeCacheWatcher(cache_dir))
-
 
     while True:
         # This value should never go below two seconds, and should probably
@@ -59,6 +65,10 @@ def cache_processor_worker(cache_dirs, upload_queue):
                     logger.debug("Adding message to the queue for upload.")
                     upload_queue.put(message_json)
 
+                if delete_cache:
+                    # If cache file deletion is enabled, trash the file.
+                    delete_cache_file(cache_file)
+
 def upload_worker(upload_queue):
     """
     This worker process watches the upload queue for new messages to upload.
@@ -73,13 +83,14 @@ def upload_worker(upload_queue):
         message_json = upload_queue.get()
         upload_message(message_json)
 
-def run(additional_eve_dirs=None):
+def run(additional_eve_dirs=None, delete_cache=False):
     """
     Fires up the various processes that comprise the client. For each EVE
     install,
 
-    :keyword list additional_eve_dirs: If speficied, append this list of
+    :keyword list additional_eve_dirs: If specified, append this list of
         additional paths to search for cache dirs.
+    :keyword bool delete_cache: If True, delete cache files after reading.
     """
 
     global UPLOAD_QUEUE
@@ -98,7 +109,7 @@ def run(additional_eve_dirs=None):
     # directories for file modification.
     cache_worker_process = Process(
         target=cache_processor_worker,
-        args=(cache_dirs, UPLOAD_QUEUE)
+        args=(cache_dirs, UPLOAD_QUEUE, delete_cache)
     )
     cache_worker_process.start()
 

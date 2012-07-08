@@ -26,10 +26,11 @@ what that means, use these:
 * Download the `latest source snapshot`_ from GitHub.
 * Extract and ``cd`` to the extracted source.
 * ``sudo python setup.py install``
-* Optionally, you may install watchdog, which enables a much more efficient
+* Optionally, you may install watchdog_, which enables a much more efficient
   and accurate cache monitor: ``sudo easy_install watchdog``
 * You should now be able to run via ``emdu_console``
 
+.. _watchdog: http://pypi.python.org/pypi/watchdog/
 .. _latest source snapshot: https://github.com/gtaylor/EVE-Market-Data-Uploader/tarball/master
 
 Windows Install
@@ -44,7 +45,7 @@ We'll eventually package this up more nicely, apologies for the hassle.
 * Download the `latest zipped source snapshot`_ from GitHub.
 * Extract source, open shell, go to extraction location.
 * Install software: ``python setup.py install``
-* Optionally, you may install watchdog, which enables a much more efficient
+* Optionally, you may install watchdog_, which enables a much more efficient
   and accurate cache monitor: ``easy_install watchdog``
 * Test and run: ``python <python install path>\scripts\emdu_console``
 * Optionally, add emdu_console to your path, which would let you just type

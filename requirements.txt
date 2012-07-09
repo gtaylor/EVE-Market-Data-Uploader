@@ -3,3 +3,4 @@ emds
 pyyaml
 requests
 git+http://github.com/ntt/reverence.git
+watchdog

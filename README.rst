@@ -24,13 +24,16 @@ For the sake of simplicity, these instructions install to system Python.
 For those that car enough, use virtualenv. For everyone else who doesn't know
 what that means, use these:
 
+* You should have ``pip`` already in many cases, but if you don't: ``sudo easy_install pip``
+* Install reverence_: ``sudo pip install git+http://github.com/ntt/reverence.git``
 * Download the `latest source snapshot`_ from GitHub.
 * Extract and ``cd`` to the extracted source.
 * ``sudo python setup.py install``
 * Optionally, you may install watchdog_, which enables a much more efficient
-  and accurate cache monitor: ``sudo easy_install watchdog``
+  and accurate cache monitor: ``sudo pip install watchdog``
 * You should now be able to run via ``emdu_console``
 
+.. _reverence: https://github.com/ntt/reverence
 .. _watchdog: http://pypi.python.org/pypi/watchdog/
 .. _latest source snapshot: https://github.com/gtaylor/EVE-Market-Data-Uploader/tarball/master
 

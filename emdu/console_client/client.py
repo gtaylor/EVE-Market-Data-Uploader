@@ -6,6 +6,7 @@ import sys
 import time
 import logging
 from multiprocessing import Process, Queue
+import traceback
 from emdu.cache_detector import CacheDetector
 from emdu.cache_watcher import CacheWatcher
 from emdu.cachefile_serializer import serialize_cache_file
@@ -15,7 +16,7 @@ from emdu.utils import empty_cache_dir, delete_cache_file
 logger = logging.getLogger(__name__)
 # Any entries in this queue are encoded JSON messages, ready for
 # sending to EMDR.
-UPLOAD_QUEUE = Queue()
+UPLOAD_QUEUE = Queue(maxsize=200)
 
 def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
                            cache_scan_interval):
@@ -62,8 +63,12 @@ def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
                 if message_json:
                     # Toss the encoded JSON into the upload queue, where the
                     # upload_worker process will get it.
-                    logger.debug("Adding message to the queue for upload.")
-                    upload_queue.put(message_json)
+                    try:
+                        upload_queue.put(message_json)
+                        logger.debug("Message pushed to the queue for upload.")
+                    except Queue.Full:
+                        # Their connection probably hung, or is too slow.
+                        logger.error("No room for message in upload queue. Discarding.")
 
                 if delete_cache:
                     # If cache file deletion is enabled, trash the file.
@@ -81,7 +86,14 @@ def upload_worker(upload_queue):
 
     while True:
         message_json = upload_queue.get()
-        upload_message(message_json)
+
+        try:
+            upload_message(message_json)
+        except Exception:
+            # I hate hate hate hate to do this, but if we run into an
+            # un-caught exception, this worker process dies and the queue
+            # continues to fill up.
+            logger.error(traceback.format_exc())
 
 def run(additional_eve_dirs, delete_cache, cache_scan_interval):
     """

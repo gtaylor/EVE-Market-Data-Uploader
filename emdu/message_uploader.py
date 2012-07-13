@@ -27,4 +27,3 @@ def upload_message(json_str):
         data=data,
         headers=UPLOAD_HEADERS,
     )
-    print r.status_code, r.text

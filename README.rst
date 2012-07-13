@@ -76,6 +76,13 @@ flag::
 
     emdu_console --enable-deletion
 
+Other options
+-------------
+
+To see EMDU's other configurable options, look at ``--help``::
+
+    emdu_console --help
+
 License
 -------
 

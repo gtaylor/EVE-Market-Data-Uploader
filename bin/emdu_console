@@ -25,6 +25,9 @@ parser.add_argument(
 parser.add_argument(
     '--scan-interval', action='store', dest='scan_interval', default=2.0,
     help="Cache file scan interval. Defaults to every 2 seconds.")
+parser.add_argument(
+    '--upload-workers', action='store', dest='upload_workers', default=1,
+    help="Determines number of uploader processes to spawn. Defaults to 1.")
 
 # Let's get this party started.
 if __name__ == '__main__':
@@ -36,9 +39,16 @@ if __name__ == '__main__':
         logging.error("Invalid scan interval.")
         sys.exit(1)
 
+    try:
+        upload_workers = int(parsed.upload_workers)
+    except (TypeError, ValueError):
+        logging.error("Invalid upload workers integer.")
+        sys.exit(1)
+
     client.run(
         additional_eve_dirs=parsed.eve_dirs,
         delete_cache=parsed.delete_cache,
         cache_scan_interval=scan_interval,
+        upload_workers=upload_workers,
     )
 

@@ -95,7 +95,8 @@ def upload_worker(upload_queue):
             # continues to fill up.
             logger.error(traceback.format_exc())
 
-def run(additional_eve_dirs, delete_cache, cache_scan_interval):
+def run(additional_eve_dirs, delete_cache, cache_scan_interval,
+        upload_workers):
     """
     Fires up the various processes that comprise the client. For each EVE
     install,
@@ -104,6 +105,7 @@ def run(additional_eve_dirs, delete_cache, cache_scan_interval):
         additional paths to search for cache dirs.
     :param bool delete_cache: If True, delete cache files after reading.
     :param float cache_scan_interval: Interval (in seconds) to scan the caches.
+    :param int upload_workers: The number of upload worker processes to spawn.
     """
 
     global UPLOAD_QUEUE
@@ -123,5 +125,7 @@ def run(additional_eve_dirs, delete_cache, cache_scan_interval):
     cache_worker_process.start()
 
     # Another process handles uploading the encoded JSON to EMDR.
-    uploader_process = Process(target=upload_worker, args=(UPLOAD_QUEUE,))
-    uploader_process.start()
+    for proc in range(upload_workers):
+        logger.info("Spawning upload process.")
+        uploader_process = Process(target=upload_worker, args=(UPLOAD_QUEUE,))
+        uploader_process.start()

@@ -38,7 +38,7 @@ class BaseCacheLoader(object):
 
                 caches_found.append(path)
 
-            return caches_found
+        return caches_found
 
     def _get_eve_dirs(self):
         """

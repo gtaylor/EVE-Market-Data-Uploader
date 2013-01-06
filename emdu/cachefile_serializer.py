@@ -12,10 +12,10 @@ from emdu.rev_compat import blue
 
 # Some constants that identify this uploader.
 ORDER_GENERATOR = {
-    "name": "EMDU", "key": "git"
+    "name": "EMDU", "version": "git"
 }
 UPLOAD_KEYS = [{
-    "name": "EMDU", "key": "sexytime",
+    "name": "EMDU", "version": "sexytime",
 }]
 
 def wintime_to_datetime(timestamp):

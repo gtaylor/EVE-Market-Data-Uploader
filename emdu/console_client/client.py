@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 UPLOAD_QUEUE = Queue(maxsize=200)
 
 def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
-                           cache_scan_interval):
+                           cache_scan_interval, scan_endpoint):
     """
     This is ran as a process. This function checks all detected EVE installation
     cache dirs for modified files. If files of interest are found, their
@@ -61,6 +61,8 @@ def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
                 # to be uploaded to EMDR.
                 message_json = serialize_cache_file(cache_file)
                 if message_json:
+                    logger.debug("Got message `%s`" % message_json)
+
                     # Toss the encoded JSON into the upload queue, where the
                     # upload_worker process will get it.
                     try:
@@ -74,7 +76,7 @@ def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
                     # If cache file deletion is enabled, trash the file.
                     delete_cache_file(cache_file)
 
-def upload_worker(upload_queue):
+def upload_worker(upload_queue, scan_endpoint):
     """
     This worker process watches the upload queue for new messages to upload.
     Each entry in the upload queue is an encoded, read-to-upload-to-EMDR
@@ -86,9 +88,10 @@ def upload_worker(upload_queue):
 
     while True:
         message_json = upload_queue.get()
+        logger.debug("upload_worker got message %s" % message_json)
 
         try:
-            upload_message(message_json)
+            upload_message(message_json, scan_endpoint)
         except Exception:
             # I hate hate hate hate to do this, but if we run into an
             # un-caught exception, this worker process dies and the queue
@@ -96,7 +99,7 @@ def upload_worker(upload_queue):
             logger.error(traceback.format_exc())
 
 def run(additional_eve_dirs, delete_cache, cache_scan_interval,
-        upload_workers):
+        upload_workers, scan_endpoint):
     """
     Fires up the various processes that comprise the client. For each EVE
     install,
@@ -106,6 +109,7 @@ def run(additional_eve_dirs, delete_cache, cache_scan_interval,
     :param bool delete_cache: If True, delete cache files after reading.
     :param float cache_scan_interval: Interval (in seconds) to scan the caches.
     :param int upload_workers: The number of upload worker processes to spawn.
+    :param string scan_endpoint: URL to send the result to.
     """
 
     global UPLOAD_QUEUE
@@ -120,12 +124,12 @@ def run(additional_eve_dirs, delete_cache, cache_scan_interval,
     # directories for file modification.
     cache_worker_process = Process(
         target=cache_processor_worker,
-        args=(cache_dirs, UPLOAD_QUEUE, delete_cache, cache_scan_interval)
+        args=(cache_dirs, UPLOAD_QUEUE, delete_cache, cache_scan_interval, scan_endpoint)
     )
     cache_worker_process.start()
 
     # Another process handles uploading the encoded JSON to EMDR.
     for proc in range(upload_workers):
         logger.info("Spawning upload process.")
-        uploader_process = Process(target=upload_worker, args=(UPLOAD_QUEUE,))
+        uploader_process = Process(target=upload_worker, args=(UPLOAD_QUEUE, scan_endpoint,))
         uploader_process.start()

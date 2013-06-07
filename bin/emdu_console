@@ -28,6 +28,9 @@ parser.add_argument(
 parser.add_argument(
     '--upload-workers', action='store', dest='upload_workers', default=1,
     help="Determines number of uploader processes to spawn. Defaults to 1.")
+parser.add_argument(
+    '--endpoint', action='store', dest='scan_endpoint', default='http://upload.eve-emdr.com/upload/',
+    help="Where to send the market data. Defaults to http://upload.eve-emdr.com/upload/ .")
 
 # Let's get this party started.
 if __name__ == '__main__':
@@ -45,10 +48,18 @@ if __name__ == '__main__':
         logging.error("Invalid upload workers integer.")
         sys.exit(1)
 
+    try:
+        endpoint = parsed.scan_endpoint
+        logging.info("Got scan_endpoint %s" % endpoint)
+    except (TypeError, ValueError):
+        logging.error("Invalid scan endpoint")
+        sys.exit(1)
+
     client.run(
         additional_eve_dirs=parsed.eve_dirs,
         delete_cache=parsed.delete_cache,
         cache_scan_interval=scan_interval,
         upload_workers=upload_workers,
+        scan_endpoint=parsed.scan_endpoint,
     )
 

@@ -12,18 +12,19 @@ UPLOAD_HEADERS = {
     "User-Agent": "EMDU/git",
 }
 
-def upload_message(json_str):
+def upload_message(json_str, scan_endpoint):
     """
     Given an encoded JSON message, upload it to EMDR.
 
     :param json_str: The encoded order or history message to upload.
+    :param string: URL to send the result to.
     """
 
     # Compressed request
     data = zlib.compress(json_str)
 
     r = requests.post(
-        'http://upload.eve-emdr.com/upload/',
+        scan_endpoint,
         data=data,
         headers=UPLOAD_HEADERS,
     )

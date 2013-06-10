@@ -15,7 +15,7 @@ ORDER_GENERATOR = {
     "name": "EMDU", "version": "git"
 }
 UPLOAD_KEYS = [{
-    "name": "EMDU", "version": "sexytime",
+    "name": "EMDU", "key": "sexytime",
 }]
 
 def wintime_to_datetime(timestamp):

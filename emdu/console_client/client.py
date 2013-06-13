@@ -61,8 +61,6 @@ def cache_processor_worker(cache_dirs, upload_queue, delete_cache,
                 # to be uploaded to EMDR.
                 message_json = serialize_cache_file(cache_file)
                 if message_json:
-                    logger.debug("Got message `%s`" % message_json)
-
                     # Toss the encoded JSON into the upload queue, where the
                     # upload_worker process will get it.
                     try:
@@ -88,7 +86,6 @@ def upload_worker(upload_queue, scan_endpoint):
 
     while True:
         message_json = upload_queue.get()
-        logger.debug("upload_worker got message %s" % message_json)
 
         try:
             upload_message(message_json, scan_endpoint)
